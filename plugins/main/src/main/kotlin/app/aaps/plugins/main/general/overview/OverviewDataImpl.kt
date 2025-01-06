@@ -14,15 +14,18 @@ import app.aaps.core.graph.data.PointsWithLabelGraphSeries
 import app.aaps.core.graph.data.RunningModeDataPoint
 import app.aaps.core.graph.data.ScaledDataPoint
 import app.aaps.core.graph.data.StepsDataPoint
+import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.db.ProcessedTbrEbData
 import app.aaps.core.interfaces.graph.Scale
 import app.aaps.core.interfaces.graph.SeriesData
+import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.overview.OverviewData
 import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.profile.ProfileFunction
 import app.aaps.core.interfaces.resources.ResourceHelper
 import app.aaps.core.interfaces.utils.DateUtil
+import app.aaps.core.keys.BooleanNonKey
 import app.aaps.core.keys.IntNonKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.R
@@ -153,9 +156,21 @@ class OverviewDataImpl @Inject constructor(
             }
                 ?: "${rh.gs(app.aaps.core.ui.R.string.base_basal_rate_label)}: ${rh.gs(app.aaps.core.ui.R.string.pump_base_basal_rate, profile.getBasal())}"
         } ?: rh.gs(app.aaps.core.ui.R.string.value_unavailable_short)
+    override fun autoOrTddSensRatio(loop: Loop, iobCobCalculator: IobCobCalculator): Double? {
+        val useAutosens =
+            if (config.AAPSCLIENT) preferences.get(BooleanNonKey.AutosensUsedOnMainPhone)
+            else constraintsChecker.isAutosensModeEnabled().value()
+        val lastAutosensData = iobCobCalculator.ads.getLastAutosensData("Overview", aapsLogger, dateUtil)
+        val ratioUsed = request?.autosensResult?.ratio ?: 1.0
+        return if (useAutosens) {
             if (preferences.get(BooleanKey.ApsDynIsfAdjustSensitivity))
             else
+                lastAutosensData?.autosensResult?.ratio ?: 1.0
+        val autosensRatio = autoOrTddSensRatio(loop, iobCobCalculator)
+        if (autosensRatio != null)
+            text += String.format(Locale.ENGLISH, "%.0f%%", autosensRatio * 100)
             else if (config.AAPSCLIENT) processedDeviceStatusData.getAPSResult()?.variableSens ?: 0.0
+            if (autosensRatio != null) text += "\n"
             else
 
     @DrawableRes override fun temporaryBasalIcon(): Int =
