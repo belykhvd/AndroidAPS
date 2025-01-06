@@ -1206,6 +1206,9 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                         it < 100.0 -> app.aaps.core.objects.R.drawable.ic_as_below
                         else       -> app.aaps.core.objects.R.drawable.ic_swap_vert_black_48dp_green
                     }
+        val text = overviewData.sensitivityText(true, loop, iobCobCalculator)
+        binding.infoLayout.sensitivity.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
+        binding.infoLayout.sensitivity.text = text
                 }
                     ?: app.aaps.core.objects.R.drawable.ic_swap_vert_black_48dp_green
             )
@@ -1221,40 +1224,9 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             )
         }
 
-        // Show variable sensitivity
-        val profile = profileFunction.getProfile()
-        val request = loop.lastRun?.request
-        val isfMgdl = profile?.getProfileIsfMgdl()
-        val isfForCarbs = profile?.getIsfMgdlForCarbs(dateUtil.now(), "Overview", config, processedDeviceStatusData)
-        val variableSens =
-            if (config.APS) request?.variableSens ?: 0.0
-            else if (config.AAPSCLIENT) processedDeviceStatusData.getAPSResult()?.variableSens ?: 0.0
-            else 0.0
-
-        if (variableSens != isfMgdl && variableSens != 0.0 && isfMgdl != null) {
-            val okDialogText: ArrayList<String> = ArrayList()
-            val overViewText: ArrayList<String> = ArrayList()
             }
             overViewText.add(
                 String.format(
-                    Locale.getDefault(), "%1$.1f→%2$.1f",
-                    profileUtil.fromMgdlToUnits(isfMgdl, profileFunction.getUnits()),
-                    profileUtil.fromMgdlToUnits(variableSens, profileFunction.getUnits())
-                )
-            )
-            binding.infoLayout.sensitivity.text = overViewText.joinToString("\n")
-            binding.infoLayout.sensitivity.visibility = View.VISIBLE
-            binding.infoLayout.variableSensitivity.visibility = View.GONE
-                okDialogText.add(rh.gs(app.aaps.core.ui.R.string.algorithm_long, ratioUsed * 100))
-            okDialogText.add(rh.gs(app.aaps.core.ui.R.string.isf_for_carbs, profileUtil.fromMgdlToUnits(isfForCarbs ?: 0.0, profileFunction.getUnits())))
-            if (config.APS) {
-                val aps = activePlugin.activeAPS
-                aps.getSensitivityOverviewString()?.let {
-                    okDialogText.add(it)
-                }
-            }
-            binding.infoLayout.asLayout.setOnClickListener { activity?.let { OKDialog.show(it, rh.gs(app.aaps.core.ui.R.string.sensitivity), okDialogText.joinToString("\n")) } }
-
         } else {
     }
 

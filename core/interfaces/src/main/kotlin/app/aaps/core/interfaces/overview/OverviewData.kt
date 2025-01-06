@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
 import app.aaps.core.data.model.GV
+import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.graph.Scale
 import app.aaps.core.interfaces.graph.SeriesData
+import app.aaps.core.interfaces.iob.IobCobCalculator
 
 interface OverviewData {
 
@@ -42,6 +44,11 @@ interface OverviewData {
     */
     fun extendedBolusText(): String
     fun extendedBolusDialogText(): String
+
+    /*
+     * APS
+     */
+    fun sensitivityText(showIsfForCarbs: Boolean, loop: Loop, iobCobCalculator: IobCobCalculator): String
 
     /*
      * Graphs

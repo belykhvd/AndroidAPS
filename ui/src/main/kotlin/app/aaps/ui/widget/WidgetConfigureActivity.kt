@@ -40,6 +40,10 @@ class WidgetConfigureActivity : DaggerActivity() {
                 Widget.updateWidget(this@WidgetConfigureActivity, "WidgetConfigure")
             }
         })
+        binding.statusSwitch.setOnCheckedChangeListener { _, v ->
+            preferences.put(BooleanComposedKey.WidgetShowStatus, appWidgetId, value = v)
+            Widget.updateWidget(this, "WidgetConfigure")
+        }
 
         binding.closeLayout.close.setOnClickListener {
             // Make sure we pass back the original appWidgetId
@@ -65,6 +69,7 @@ class WidgetConfigureActivity : DaggerActivity() {
 
         binding.seekBar.progress = preferences.get(IntComposedKey.WidgetOpacity, appWidgetId)
         binding.useBlack.isChecked = preferences.get(BooleanComposedKey.WidgetUseBlack, appWidgetId)
+        binding.statusSwitch.isChecked = preferences.get(BooleanComposedKey.WidgetShowStatus, appWidgetId)
     }
 
     override fun onDestroy() {
