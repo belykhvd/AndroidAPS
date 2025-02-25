@@ -135,5 +135,9 @@ enum class BooleanKey(
     AlwaysPromoteAdvancedFiltering("always_promote_advanced_filtering", false),
     DisableUpdatesChecker("skip_updates_check", false, defaultedBySM = false),
     EngineeringMode("force_engineering_mode", false, defaultedBySM = false),
+    NightMode("night_mode", false),
+    NightModeWithCOB("night_mode_cob", true, dependency = NightMode),
+    NightModeLowTT("night_mode_low_tt", true, dependency = NightMode),
+    AllowRecalculatedBGs("allow_recalc_bgs", false),
     EnableSmbBgThreshold("enable_smb_bg_threshold", false),
 }

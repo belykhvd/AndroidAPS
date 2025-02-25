@@ -56,6 +56,8 @@ enum class StringKey(
     GoogleDriveFolderId("google_drive_folder_id", ""),
     GoogleDriveRefreshToken("google_drive_refresh_token", "", isPassword = true),
 
+    NightModeBegin("night_mode_begin", "22:00", dependency = BooleanKey.NightMode),
+    NightModeEnd("night_mode_end", "06:00", dependency = BooleanKey.NightMode),
     PumpCommonBolusStorage("pump_sync_storage_bolus", ""),
     PumpCommonTbrStorage("pump_sync_storage_tbr", ""),
 }
