@@ -14,6 +14,7 @@ import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
 import app.aaps.core.data.ue.ValueWithUnit
 import app.aaps.core.interfaces.aps.Loop
+import app.aaps.core.interfaces.insulin.Insulin
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.logging.LTag
 import app.aaps.core.interfaces.logging.UserEntryLogger
@@ -131,6 +132,7 @@ class ProfileFragment : DaggerFragment() {
         val aps = activePlugin.activeAPS
         binding.isfDynamicLabel.visibility = aps.supportsDynamicIsf().toVisibility()
         binding.icDynamicLabel.visibility = aps.supportsDynamicIc().toVisibility()
+        binding.diaDynamicLabel.visibility = (activePlugin.activeInsulin.id == Insulin.InsulinType.OREF_LYUMJEV).toVisibility()
     }
 
     fun build() {
