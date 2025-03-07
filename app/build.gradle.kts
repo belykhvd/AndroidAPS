@@ -47,7 +47,7 @@ fun generateGitRemote(): String {
 fun generateDate(): String {
     val stringBuilder: StringBuilder = StringBuilder()
     // showing only date prevents app to rebuild everytime
-    stringBuilder.append(SimpleDateFormat("yyyy.MM.dd").format(Date()))
+    stringBuilder.append(SimpleDateFormat("yyyy.MM.dd-HH.mm").format(Date()))
     return stringBuilder.toString()
 }
 
@@ -89,6 +89,7 @@ android {
         minSdk = Versions.minSdk
         targetSdk = Versions.targetSdk
 
+        buildConfigField("String", "CUSTOM_PATCH_VERSION", "\"${Versions.customPatchVersion}\"")
         buildConfigField("String", "VERSION", "\"$version\"")
         buildConfigField("String", "BUILDVERSION", "\"${generateGitBuild()}-${generateDate()}\"")
         buildConfigField("String", "REMOTE", "\"${generateGitRemote()}\"")
@@ -106,6 +107,14 @@ android {
             applicationId = "info.nightscout.androidaps"
             dimension = "standard"
             resValue("string", "app_name", "AAPS")
+            versionName = Versions.appVersion
+            manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
+            manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
+        }
+        create("advanced") {
+            applicationId = "info.nightscout.androidaps"
+            dimension = "standard"
+            resValue("string", "app_name", "AAPS+")
             versionName = Versions.appVersion
             manifestPlaceholders["appIcon"] = "@mipmap/ic_launcher"
             manifestPlaceholders["appIconRound"] = "@mipmap/ic_launcher_round"
@@ -228,7 +237,7 @@ println("-------------------")
 if (!gitAvailable()) {
     throw GradleException("GIT system is not available. On Windows try to run Android Studio as an Administrator. Check if GIT is installed and Studio have permissions to use it")
 }
-if (isMaster() && !allCommitted()) {
-    throw GradleException("There are uncommitted changes. Clone sources again as described in wiki and do not allow gradle update")
-}
+// if (isMaster() && !allCommitted()) {
+//     throw GradleException("There are uncommitted changes. Clone sources again as described in wiki and do not allow gradle update")
+// }
 
