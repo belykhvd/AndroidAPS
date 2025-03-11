@@ -153,6 +153,9 @@ class OverviewDataImpl @Inject constructor(
             }
                 ?: "${rh.gs(app.aaps.core.ui.R.string.base_basal_rate_label)}: ${rh.gs(app.aaps.core.ui.R.string.pump_base_basal_rate, profile.getBasal())}"
         } ?: rh.gs(app.aaps.core.ui.R.string.value_unavailable_short)
+            if (preferences.get(BooleanKey.ApsDynIsfAdjustSensitivity))
+            else
+            else
 
     @DrawableRes override fun temporaryBasalIcon(): Int =
         profileFunction.getProfile()?.let { profile ->

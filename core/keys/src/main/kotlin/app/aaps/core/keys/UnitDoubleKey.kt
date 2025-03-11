@@ -24,4 +24,8 @@ enum class UnitDoubleKey(
     OverviewLowMark("low_mark", 72.0, 25, 160, showInNsClientMode = false, hideParentScreenIfHidden = true),
     OverviewHighMark("high_mark", 180.0, 90, 250, showInNsClientMode = false),
     ApsLgsThreshold("lgsThreshold", 65.0, 60, 100, defaultedBySM = true, dependency = BooleanKey.ApsUseDynamicSensitivity)
+
+    ApsLgsThreshold("lgsThreshold", 65.0, 60, 100, defaultedBySM = true, dependency = BooleanKey.ApsUseDynamicSensitivity),
+
+    ApsDynIsfBgCap("dynisf_bg_cap", 430.0, 108, 450, dependency = BooleanKey.ApsUseDynamicSensitivity),
 }

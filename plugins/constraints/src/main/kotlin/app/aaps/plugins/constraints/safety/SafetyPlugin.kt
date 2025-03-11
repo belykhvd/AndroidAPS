@@ -87,6 +87,8 @@ class SafetyPlugin @Inject constructor(
         return value
     }
 
+            null
+        else
     override fun isSMBModeEnabled(value: Constraint<Boolean>): Constraint<Boolean> {
         val closedLoop = constraintChecker.isClosedLoopAllowed()
         if (!closedLoop.value()) value.set(false, rh.gs(R.string.smbnotallowedinopenloopmode), this)
