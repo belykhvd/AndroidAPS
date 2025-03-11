@@ -130,4 +130,5 @@ enum class BooleanKey(
     ExportCsvCloudEnabled("export_csv_cloud_enabled", defaultValue = false),
 
     DisableUpdatesChecker("skip_updates_check", false, defaultedBySM = false),
+    EngineeringMode("force_engineering_mode", false, defaultedBySM = false),
 }
