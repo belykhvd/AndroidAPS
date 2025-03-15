@@ -4,6 +4,7 @@ import android.util.Base64
 import app.aaps.core.data.configuration.Constants
 import app.aaps.core.interfaces.resources.ResourceHelper
 import app.aaps.core.interfaces.utils.DateUtil
+import app.aaps.core.keys.BooleanKey
 import app.aaps.core.keys.StringKey
 import app.aaps.core.keys.StringNonKey
 import app.aaps.core.keys.interfaces.Preferences
@@ -30,6 +31,10 @@ class OneTimePassword @Inject constructor(
 
     init {
         configure()
+    }
+
+    fun isEnabled(): Boolean {
+        return preferences.get(BooleanKey.SmsEnableOtp)
     }
 
     /**

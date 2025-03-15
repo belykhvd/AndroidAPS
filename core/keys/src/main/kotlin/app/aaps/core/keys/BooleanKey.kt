@@ -78,6 +78,10 @@ enum class BooleanKey(
 
     SmsAllowRemoteCommands("smscommunicator_remotecommandsallowed", false),
     SmsReportPumpUnreachable("smscommunicator_report_pump_unreachable", true),
+    SmsReportProfileSwitch("smscommunicator_report_profile_switch", true),
+    SmsAddPumpStatus("smscommunicator_add_pump_status", false, dependency = SmsAllowRemoteCommands),
+    SmsEnableOtp("smscommunicator_enable_otp", true, dependency = SmsAllowRemoteCommands),
+    SmsReportToAll("smscommunicator_report_to_all", true, dependency = SmsAllowRemoteCommands),
 
     VirtualPumpStatusUpload("virtualpump_uploadstatus", false, showInNsClientMode = false),
     NsClientUploadData("ns_upload", true, showInNsClientMode = false, hideParentScreenIfHidden = true),
@@ -116,6 +120,7 @@ enum class BooleanKey(
     WearCustomWatchfaceAuthorization(key = "wear_custom_watchface_autorization", defaultValue = false),
     WearNotifyOnSmb(key = "wear_notifySMB", defaultValue = true),
     WearBroadcastData(key = "wear_broadcast_data", defaultValue = false),
+
     WizardCalculationVisible("wizard_calculation_visible", defaultValue = false),
     WizardCorrectionPercent("wizard_correction_percent", defaultValue = false),
     WizardIncludeCob("wizard_include_cob", defaultValue = false),

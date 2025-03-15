@@ -78,6 +78,7 @@ class InsulinLyumjevPlugin @Inject constructor(
             val tp: Double
             if (preferences.get(BooleanKey.LyumjevU200)) { //MP ID = 6 for Lyumjev U200
                 tp = (a0 + a1 * 2 * bolus.amount)/(1 + b1 * 2 * bolus.amount)
+            } else {
                 tp = (a0 + a1 * bolus.amount) / (1 + b1 * bolus.amount)
             }
 

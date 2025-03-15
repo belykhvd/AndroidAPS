@@ -201,12 +201,12 @@ open class OpenAPSAutoISFPlugin @Inject constructor(
 
     override fun specialEnableCondition(): Boolean {
             try {
-                true
-            }
         return try {
             activePlugin.activePump.pumpDescription.isTempBasalCapable
         } catch (_: Exception) {
             // may fail during initialization
+            true
+        }
     }
 
     override fun specialShowInListCondition(): Boolean {

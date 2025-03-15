@@ -77,6 +77,7 @@ class LoggerUtilsImpl @Inject constructor(
                 it.maxHistory = 1000
                 it.setMaxFileSize(FileSize(FileSize.MB_COEFFICIENT * 25))
                 it.setTotalSizeCap(FileSize(FileSize.GB_COEFFICIENT * 10))
+            } else {
                 it.maxHistory = 300
                 it.setMaxFileSize(FileSize(FileSize.MB_COEFFICIENT * 25))
                 it.setTotalSizeCap(FileSize(FileSize.GB_COEFFICIENT * 2))

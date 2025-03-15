@@ -99,6 +99,7 @@ internal object NetworkStackBuilder {
         JsonDeserializer<JSONObject?> { json, _, _ ->
             JSONObject(json.asJsonObject.toString())
         }
+                } else {
     private fun provideGson(): Gson = GsonBuilder().also {
         it.registerTypeAdapter(JSONObject::class.java, deserializer)
     }.create()

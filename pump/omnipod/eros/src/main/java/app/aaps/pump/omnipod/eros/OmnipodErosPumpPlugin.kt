@@ -931,6 +931,10 @@ class OmnipodErosPumpPlugin @Inject constructor(
             addPreference(
                 AdaptiveSwitchPreference(
                     ctx = context,
+                )
+            )
+            addPreference(
+                AdaptiveSwitchPreference(
                     ctx = context,
                     booleanKey = ErosBooleanPreferenceKey.BatteryChangeLogging,
                     title = R.string.omnipod_eros_preferences_battery_change_logging_enabled,

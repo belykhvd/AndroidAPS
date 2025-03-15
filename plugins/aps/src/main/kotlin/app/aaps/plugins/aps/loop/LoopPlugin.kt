@@ -973,7 +973,6 @@ class LoopPlugin @Inject constructor(
     override fun scheduleBuildAndStoreDeviceStatus(reason: String) {
         class UpdateRunnable : Runnable {
 
-            override fun run() {
                 buildAndStoreDeviceStatus(reason)
                 task = null
             }

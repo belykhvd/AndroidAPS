@@ -1379,6 +1379,8 @@ class MedtronicPumpPlugin @Inject constructor(
                     summary = app.aaps.pump.common.hw.rileylink.R.string.riley_link_show_battery_level_summary
                 )
             )
+            addPreference(
+                AdaptiveSwitchPreference(
                     ctx = context,
                     booleanKey = RileylinkBooleanPreferenceKey.FastMode,
                 )

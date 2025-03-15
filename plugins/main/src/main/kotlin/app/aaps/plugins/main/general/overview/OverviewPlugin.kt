@@ -215,10 +215,12 @@ class OverviewPlugin @Inject constructor(
         if (config.APS || config.PUMPCONTROL) {
             if (config.isDev()) {
                 view.text = "${config.VERSION_NAME}+-${config.HEAD.substring(0, 4)}"
+            } else {
                 view.text = config.DISPLAY_VERSION_NAME
             }
             if (config.COMMITTED) {
                 view.setTextColor(rh.gac(context, app.aaps.core.ui.R.attr.omniGrayColor))
+                view.setTypeface(null, Typeface.BOLD)
                 view.alpha = 1.0f
             } else if (preferences.get(LongComposedKey.AppExpiration, config.VERSION_NAME) != 0L) {
                 view.setTextColor(rh.gac(context, app.aaps.core.ui.R.attr.metadataTextWarningColor))
