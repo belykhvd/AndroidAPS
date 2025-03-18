@@ -3,7 +3,11 @@ package app.aaps.ui.widget
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.SeekBar
+import app.aaps.core.interfaces.sharedPreferences.SP
 import app.aaps.core.keys.BooleanComposedKey
 import app.aaps.core.keys.IntComposedKey
 import app.aaps.core.keys.interfaces.Preferences
