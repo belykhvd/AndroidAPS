@@ -1386,6 +1386,8 @@ class MedtronicPumpPlugin @Inject constructor(
                 )
             )
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = MedtronicBooleanPreferenceKey.SetNeutralTemp, title = R.string.set_neutral_temps_title, summary = R.string.set_neutral_temps_summary))
+            addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = MedtronicBooleanPreferenceKey.LogInsulinChange, title = R.string.log_insulin_change_title, summary = R.string.log_insulin_change_summary))
+            addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = MedtronicBooleanPreferenceKey.LogBatteryChange, title = R.string.log_battery_change_title, summary = R.string.log_battery_change_summary))
         }
     }
 
