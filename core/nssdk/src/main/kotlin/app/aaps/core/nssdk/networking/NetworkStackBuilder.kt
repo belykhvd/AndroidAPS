@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
+import com.google.gson.JsonParseException
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -99,8 +100,32 @@ internal object NetworkStackBuilder {
         JsonDeserializer<JSONObject?> { json, _, _ ->
             JSONObject(json.asJsonObject.toString())
         }
+
+    private val longDeserializer: JsonDeserializer<Long?> =
+        JsonDeserializer { json, _, _ ->
+            try {
+                if (json.isJsonNull || json.asString.isEmpty()) {
+                    null
                 } else {
+                    val primitive = json.asJsonPrimitive
+                        primitive.isNumber -> {
+                            primitive.asNumber.toLong()
+                        }
+                        primitive.isString -> {
+                            primitive.asString.toLongOrNull()
+                        }
+                        else -> {
+                            throw JsonParseException("Unexpected type for Long: $json")
+                        }
+                    }
+                }
+            } catch (ex: Exception) {
+                throw JsonParseException("Failed to parse Long: $json", ex)
+            }
+        }
+
     private fun provideGson(): Gson = GsonBuilder().also {
+        it.registerTypeAdapter(Long::class.javaObjectType, longDeserializer)
         it.registerTypeAdapter(JSONObject::class.java, deserializer)
     }.create()
 
