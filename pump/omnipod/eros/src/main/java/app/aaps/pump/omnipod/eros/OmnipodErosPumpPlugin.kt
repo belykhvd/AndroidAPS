@@ -931,6 +931,9 @@ class OmnipodErosPumpPlugin @Inject constructor(
             addPreference(
                 AdaptiveSwitchPreference(
                     ctx = context,
+                    booleanKey = RileylinkBooleanPreferenceKey.FastMode,
+                    title = app.aaps.pump.common.hw.rileylink.R.string.riley_link_fast_mode,
+                    summary = app.aaps.pump.common.hw.rileylink.R.string.riley_link_fast_mode_summary
                 )
             )
             addPreference(

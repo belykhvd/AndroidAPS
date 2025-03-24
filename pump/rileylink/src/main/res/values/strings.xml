@@ -10,7 +10,7 @@
     <string name="pump_status_timeout_comm">Timeout on communication</string>
     <string name="pump_status_pump_unreachable">Pump unreachable</string>
     <string name="pump_status_invalid_config">Invalid configuration</string>
-
+    
     <string name="medtronic_pump_encoding_4b6b_local">Software 4b6b Encoding</string>
     <string name="medtronic_pump_encoding_4b6b_rileylink">Hardware 4b6b Encoding</string>
     <string name="medtronic_pump_frequency_us_ca">US &amp; Canada (916 MHz)</string>
@@ -85,6 +85,8 @@
     <!-- RileyLink - Preferences -->
     <string name="riley_link_show_battery_level">Show battery level reported by OrangeLink/EmaLink/DiaLink</string>
     <string name="riley_link_show_battery_level_summary">DOES NOT work with the original RileyLink. May not work with other RileyLink alternatives.</string>
+    <string name="riley_link_fast_mode">[EXPERIMENTAL] Fast mode</string>
+    <string name="riley_link_fast_mode_summary">Lower down delays and etc. Highly experimental.</string>
 
     <plurals name="duration_days">
         <item quantity="one">%1$d day</item>
