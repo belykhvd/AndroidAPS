@@ -151,7 +151,7 @@ class DetermineBasalSMB @Inject constructor(
 
     fun determine_basal(
         glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data_array: Array<IobTotal>, profile: OapsProfile, autosens_data: AutosensResult, meal_data: MealData,
-        microBolusAllowed: Boolean, currentTime: Long, flatBGsDetected: Boolean, dynIsfMode: Boolean
+        microBolusAllowed: Boolean, currentTime: Long, flatBGsDetected: Boolean, dynIsfMode: Boolean, smb_ratio: Double
     ): RT {
         consoleError.clear()
         consoleLog.clear()
@@ -1063,7 +1063,7 @@ class DetermineBasalSMB @Inject constructor(
                 }
                 // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
                 val roundSMBTo = 1 / profile.bolus_increment
-                val microBolus = Math.floor(Math.min(insulinReq / 2, maxBolus) * roundSMBTo) / roundSMBTo
+                val microBolus = Math.floor(Math.min(insulinReq * smb_ratio, maxBolus) * roundSMBTo) / roundSMBTo
                 // calculate a long enough zero temp to eventually correct back up to target
                 val smbTarget = target_bg
                 val worstCaseInsulinReq = (smbTarget - (naive_eventualBG + minIOBPredBG) / 2.0) / sens
@@ -1086,7 +1086,7 @@ class DetermineBasalSMB @Inject constructor(
                     smbLowTempReq = round(basal * durationReq / 30.0, 2)
                     durationReq = 30
                 }
-                rT.reason.append(" insulinReq $insulinReq")
+                rT.reason.append(" insulinReq $insulinReq (smbRatio $smb_ratio)")
                 if (microBolus >= maxBolus) {
                     rT.reason.append("; maxBolus $maxBolus")
                 }

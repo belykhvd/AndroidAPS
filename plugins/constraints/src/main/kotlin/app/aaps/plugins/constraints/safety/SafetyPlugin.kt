@@ -13,6 +13,7 @@ import app.aaps.core.interfaces.constraints.PluginConstraints
 import app.aaps.core.interfaces.constraints.Safety
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.logging.AAPSLogger
+import app.aaps.core.interfaces.logging.LTag
 import app.aaps.core.interfaces.notifications.Notification
 import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.plugin.PluginBase
@@ -29,6 +30,7 @@ import app.aaps.core.interfaces.utils.Round
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.IntKey
 import app.aaps.core.keys.StringKey
+import app.aaps.core.keys.UnitDoubleKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.constraints.ConstraintObject
 import app.aaps.core.objects.extensions.put
@@ -92,10 +94,20 @@ class SafetyPlugin @Inject constructor(
     override fun isSMBModeEnabled(value: Constraint<Boolean>): Constraint<Boolean> {
         val closedLoop = constraintChecker.isClosedLoopAllowed()
         if (!closedLoop.value()) value.set(false, rh.gs(R.string.smbnotallowedinopenloopmode), this)
+        aapsLogger.debug(LTag.CONSTRAINTS, "Night mode result: ${nightModeResult ?: "active"}")
+        val bg = glucoseStatusProvider.glucoseStatusData?.glucose
+        val th = profileUtil.convertToMgdlDetect(preferences.get(UnitDoubleKey.SmbBgThreshold))
+        if (bg != null && bg <= th && preferences.get(BooleanKey.EnableSmbBgThreshold)) {
+            aapsLogger.debug(LTag.CONSTRAINTS, "SMBs are disabled cause of an active BG threshold: $bg < $th")
+            value.set(false, rh.gs(R.string.bg_threshold_smbs_disabled, bg, th), this)
+        }
+
         return value
     }
 
     override fun isAdvancedFilteringEnabled(value: Constraint<Boolean>): Constraint<Boolean> {
+        if (preferences.get(BooleanKey.AlwaysPromoteAdvancedFiltering)) return value
+
         val bgSource = activePlugin.activeBgSource
         if (!bgSource.advancedFilteringSupported()) value.set(false, rh.gs(R.string.smbalwaysdisabled), this)
         return value
@@ -203,6 +215,8 @@ class SafetyPlugin @Inject constructor(
             )
             addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.SafetyMaxBolus, title = app.aaps.core.ui.R.string.max_bolus_title))
             addPreference(AdaptiveIntPreference(ctx = context, intKey = IntKey.SafetyMaxCarbs, title = app.aaps.core.ui.R.string.max_carbs_title))
+            addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.AlwaysPromoteAdvancedFiltering, title = R.string.always_promote_advanced_filtering_title, summary = R.string.always_promote_advanced_filtering_summary))
+            addPreference(preferenceManager.createPreferenceScreen(context).apply {
         }
     }
 }

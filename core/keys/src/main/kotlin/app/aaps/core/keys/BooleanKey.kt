@@ -132,6 +132,8 @@ enum class BooleanKey(
     ExportCsvLocalEnabled("export_csv_local_enabled", defaultValue = true),
     ExportCsvCloudEnabled("export_csv_cloud_enabled", defaultValue = false),
 
+    AlwaysPromoteAdvancedFiltering("always_promote_advanced_filtering", false),
     DisableUpdatesChecker("skip_updates_check", false, defaultedBySM = false),
     EngineeringMode("force_engineering_mode", false, defaultedBySM = false),
+    EnableSmbBgThreshold("enable_smb_bg_threshold", false),
 }

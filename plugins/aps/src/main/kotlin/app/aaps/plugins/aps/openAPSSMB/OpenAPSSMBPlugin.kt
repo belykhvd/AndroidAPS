@@ -195,7 +195,7 @@ open class OpenAPSSMBPlugin @Inject constructor(
         val smbEnabled = preferences.get(BooleanKey.ApsUseSmb)
         val smbAlwaysEnabled = preferences.get(BooleanKey.ApsUseSmbAlways)
         val uamEnabled = preferences.get(BooleanKey.ApsUseUam)
-        val advancedFiltering = activePlugin.activeBgSource.advancedFilteringSupported()
+        val advancedFiltering = activePlugin.activeBgSource.advancedFilteringSupported() || preferences.get(BooleanKey.AlwaysPromoteAdvancedFiltering)
         val autoSensOrDynIsfSensEnabled = if (preferences.get(BooleanKey.ApsUseDynamicSensitivity)) {
             preferences.get(BooleanKey.ApsDynIsfAdjustSensitivity)
         } else {
@@ -371,10 +371,24 @@ open class OpenAPSSMBPlugin @Inject constructor(
 
         aapsLogger.debug(LTag.APS, "multiplier=$profileMultiplier gluc=$glucose tdd=${dynIsfResult.tdd} (${adjFactor}x) baseSens=${baseSensitivity} velocity=$velocity -> sensRatio=${ratio} sens=${dynIsfResult.variableSensitivity}")
         return dynIsfResult
+    }
+
+    private fun getSmbRatio(target: Double): Double {
+        val fixedRatio = preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatio)
+        val mappedRatioMin = preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatioMin)
+        val mappedRatioMax = preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatioMax)
+        var mappedRatioBG = if (preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatioBgRange) < 10.0)
+            preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatioBgRange) * GlucoseUnit.MMOLL_TO_MGDL
         else
             preferences.get(DoubleKey.ApsAutoIsfSmbDeliveryRatioBgRange)
 
         val glucoseStatus = glucoseStatusProvider.glucoseStatusData
+        if (glucoseStatus == null || mappedRatioBG == 0.0) return fixedRatio
+
+        val bg = glucoseStatus.glucose
+        if (bg < target) return mappedRatioMin
+        if (bg > target + mappedRatioBG) return mappedRatioMax
+
         val ratio = mappedRatioMin + (mappedRatioMax - mappedRatioMin) * (bg - target) / mappedRatioBG
         aapsLogger.debug(LTag.APS, "SMBVariableRatio($mappedRatioMin - $mappedRatioMax, BG $mappedRatioBG) = $ratio")
         return ratio
@@ -566,8 +580,8 @@ open class OpenAPSSMBPlugin @Inject constructor(
             microBolusAllowed = microBolusAllowed,
             currentTime = now,
             flatBGsDetected = flatBGsDetected,
-            dynIsfMode = dynIsfMode && dynIsfResult.tddPartsCalculated()
             dynIsfMode = dynIsfMode,
+            smb_ratio = getSmbRatio(targetBg)
         ).also {
             val determineBasalResult = apsResultProvider.get().with(it)
             // Preserve input data
@@ -668,7 +682,6 @@ open class OpenAPSSMBPlugin @Inject constructor(
     }
 
     override fun addPreferenceScreen(preferenceManager: PreferenceManager, parent: PreferenceScreen, context: Context, requiredKey: String?) {
-        if (requiredKey != null && requiredKey != "absorption_smb_advanced") return
         if (requiredKey != null && requiredKey !in arrayOf("absorption_smb_advanced", "smb_delivery_settings", "dynisf_settings")) return
         val category = PreferenceCategory(context)
         parent.addPreference(category)
@@ -678,6 +691,7 @@ open class OpenAPSSMBPlugin @Inject constructor(
             initialExpandedChildrenCount = 0
             addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsMaxBasal, dialogMessage = R.string.openapsma_max_basal_summary, title = R.string.openapsma_max_basal_title))
             addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsSmbMaxIob, dialogMessage = R.string.openapssmb_max_iob_summary, title = R.string.openapssmb_max_iob_title))
+            addPreference(preferenceManager.createPreferenceScreen(context).apply {
                 key = "dynisf_settings"
                 title = rh.gs(R.string.dynisf_settings_title)
                 addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsUseDynamicSensitivity, summary = R.string.use_dynamic_sensitivity_summary, title = R.string.use_dynamic_sensitivity_title))
@@ -693,6 +707,8 @@ open class OpenAPSSMBPlugin @Inject constructor(
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsSensitivityRaisesTarget, summary = R.string.sensitivity_raises_target_summary, title = R.string.sensitivity_raises_target_title))
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsResistanceLowersTarget, summary = R.string.resistance_lowers_target_summary, title = R.string.resistance_lowers_target_title))
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsUseSmb, summary = R.string.enable_smb_summary, title = R.string.enable_smb))
+            addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.EnableSmbBgThreshold, title = R.string.enable_smb_bg_threshold))
+            addPreference(AdaptiveUnitPreference(ctx = context, unitKey = UnitDoubleKey.SmbBgThreshold, title = R.string.smb_bg_threshold_title, dialogMessage = R.string.smb_bg_threshold_summary))
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsUseSmbWithHighTt, summary = R.string.enable_smb_with_high_temp_target_summary, title = R.string.enable_smb_with_high_temp_target))
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsUseSmbAlways, summary = R.string.enable_smb_always_summary, title = R.string.enable_smb_always))
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsUseSmbWithCob, summary = R.string.enable_smb_with_cob_summary, title = R.string.enable_smb_with_cob))
@@ -719,6 +735,15 @@ open class OpenAPSSMBPlugin @Inject constructor(
                 addPreference(
                     AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsMaxCurrentBasalMultiplier, dialogMessage = R.string.openapsama_current_basal_safety_multiplier_summary, title = R.string.openapsama_current_basal_safety_multiplier)
                 )
+            })
+            addPreference(preferenceManager.createPreferenceScreen(context).apply {
+                key = "smb_delivery_settings"
+                title = rh.gs(R.string.smb_delivery_settings_title)
+                summary = rh.gs(R.string.smb_delivery_settings_summary)
+                addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsAutoIsfSmbDeliveryRatio, dialogMessage = R.string.openapsama_smb_delivery_ratio_summary, title = R.string.openapsama_smb_delivery_ratio))
+                addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsAutoIsfSmbDeliveryRatioMin, dialogMessage = R.string.openapsama_smb_delivery_ratio_min_summary, title = R.string.openapsama_smb_delivery_ratio_min))
+                addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsAutoIsfSmbDeliveryRatioMax, dialogMessage = R.string.openapsama_smb_delivery_ratio_max_summary, title = R.string.openapsama_smb_delivery_ratio_max))
+                addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = DoubleKey.ApsAutoIsfSmbDeliveryRatioBgRange, dialogMessage = R.string.openapsama_smb_delivery_ratio_bg_range_summary, title = R.string.openapsama_smb_delivery_ratio_bg_range))
             })
         }
     }

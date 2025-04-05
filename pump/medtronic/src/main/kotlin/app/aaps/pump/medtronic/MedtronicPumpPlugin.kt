@@ -1379,6 +1379,10 @@ class MedtronicPumpPlugin @Inject constructor(
                     summary = app.aaps.pump.common.hw.rileylink.R.string.riley_link_show_battery_level_summary
                 )
             )
+                    ctx = context,
+                    booleanKey = RileylinkBooleanPreferenceKey.FastMode,
+                )
+            )
             addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = MedtronicBooleanPreferenceKey.SetNeutralTemp, title = R.string.set_neutral_temps_title, summary = R.string.set_neutral_temps_summary))
         }
     }
