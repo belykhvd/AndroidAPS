@@ -198,6 +198,11 @@ class PluginStore @Inject constructor(
     override val activeInsulin: Insulin
         get() = activeInsulinStore ?: getDefaultPlugin(PluginType.INSULIN) as Insulin
 
+    private fun <T> wait(millis: Long = 3000): T? {
+        Thread.sleep(millis)
+        return null
+    }
+
     // App may not be initialized yet. Wait before second return
     override val activeAPS: APS
         get() = activeAPSStore ?: checkNotNull(activeAPSStore) { "No APS selected" }

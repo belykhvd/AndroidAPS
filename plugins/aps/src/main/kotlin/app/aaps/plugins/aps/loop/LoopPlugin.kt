@@ -969,17 +969,14 @@ class LoopPlugin @Inject constructor(
     }
 
     var task: Runnable? = null
+    var lastDeviceStatusCreation: Long = 0
 
     override fun scheduleBuildAndStoreDeviceStatus(reason: String) {
-        class UpdateRunnable : Runnable {
-
-                buildAndStoreDeviceStatus(reason)
-                task = null
-            }
+        val now = System.currentTimeMillis()
+        if (now - lastDeviceStatusCreation > 5000) {
+            buildAndStoreDeviceStatus(reason)
+            lastDeviceStatusCreation = now
         }
-        task?.let { handler?.removeCallbacks(it) }
-        task = UpdateRunnable()
-        task?.let { handler?.postDelayed(it, 5000) }
     }
 
     fun buildAndStoreDeviceStatus(reason: String) {

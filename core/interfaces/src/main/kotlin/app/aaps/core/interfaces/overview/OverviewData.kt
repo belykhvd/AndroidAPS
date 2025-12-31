@@ -49,6 +49,7 @@ interface OverviewData {
      * APS
      */
     fun sensitivityText(showIsfForCarbs: Boolean, loop: Loop, iobCobCalculator: IobCobCalculator): String
+    fun autoOrTddSensRatio(loop: Loop, iobCobCalculator: IobCobCalculator): Double?
 
     /*
      * Graphs

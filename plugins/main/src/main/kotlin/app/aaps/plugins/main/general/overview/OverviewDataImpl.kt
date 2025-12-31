@@ -55,7 +55,6 @@ import kotlin.time.Instant
 class OverviewDataImpl @Inject constructor(
     private val rh: ResourceHelper,
     private val dateUtil: DateUtil,
-    private val preferences: Preferences,
     private val activePlugin: ActivePlugin,
     private val profileFunction: ProfileFunction,
     private val persistenceLayer: PersistenceLayer,
@@ -169,6 +168,7 @@ class OverviewDataImpl @Inject constructor(
             }
                 ?: "${rh.gs(app.aaps.core.ui.R.string.base_basal_rate_label)}: ${rh.gs(app.aaps.core.ui.R.string.pump_base_basal_rate, profile.getBasal())}"
         } ?: rh.gs(app.aaps.core.ui.R.string.value_unavailable_short)
+
     override fun autoOrTddSensRatio(loop: Loop, iobCobCalculator: IobCobCalculator): Double? {
         val useAutosens =
             if (config.AAPSCLIENT) preferences.get(BooleanNonKey.AutosensUsedOnMainPhone)
@@ -180,13 +180,18 @@ class OverviewDataImpl @Inject constructor(
 
         return if (useAutosens) {
             if (preferences.get(BooleanKey.ApsDynIsfAdjustSensitivity))
+                ratioUsed
             else
                 lastAutosensData?.autosensResult?.ratio ?: 1.0
+        } else null
+    }
+
     override fun sensitivityText(showIsfForCarbs: Boolean, loop: Loop, iobCobCalculator: IobCobCalculator): String {
         val autosensRatio = autoOrTddSensRatio(loop, iobCobCalculator)
         var text = ""
         if (autosensRatio != null)
             text += String.format(Locale.ENGLISH, "%.0f%%", autosensRatio * 100)
+
         // Show variable sensitivity
         val request = loop.lastRun?.request
         val isfMgdl = profileFunction.getProfile()?.getProfileIsfMgdl()

@@ -108,6 +108,7 @@ internal object NetworkStackBuilder {
                     null
                 } else {
                     val primitive = json.asJsonPrimitive
+                    when {
                         primitive.isNumber -> {
                             primitive.asNumber.toLong()
                         }

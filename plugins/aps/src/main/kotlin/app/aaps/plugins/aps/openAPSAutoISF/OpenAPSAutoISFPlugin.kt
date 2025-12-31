@@ -200,7 +200,6 @@ open class OpenAPSAutoISFPlugin @Inject constructor(
     override fun getSensitivityOverviewString(): String? = null // placeholder for Auto ISF Detailed information for overview
 
     override fun specialEnableCondition(): Boolean {
-            try {
         return try {
             activePlugin.activePump.pumpDescription.isTempBasalCapable
         } catch (_: Exception) {
@@ -1024,6 +1023,7 @@ open class OpenAPSAutoISFPlugin @Inject constructor(
                             title = R.string.openapsama_smb_delivery_ratio_bg_range
                         )
                     )
+                    //addPreference(AdaptiveDoublePreference(ctx = context, doubleKey = smbMaxRangeExtension, dialogMessage = R.string.openapsama_smb_max_range_extension_summary, title = R.string.openapsama_smb_max_range_extension))
                     addPreference(AdaptiveSwitchPreference(ctx = context, booleanKey = BooleanKey.ApsAutoIsfSmbOnEvenTarget, summary = R.string.enableSMB_EvenOn_OddOff_always_summary, title = R.string.enableSMB_EvenOn_OddOff_always))
                 })
             })

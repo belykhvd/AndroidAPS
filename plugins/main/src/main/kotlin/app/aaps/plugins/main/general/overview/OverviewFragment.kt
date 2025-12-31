@@ -1199,35 +1199,18 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
 
     private fun updateSensitivity() {
         _binding ?: return
-        ) {
-            binding.infoLayout.sensitivityIcon.setImageResource(
-                    when {
-                        it > 100.0 -> app.aaps.core.objects.R.drawable.ic_as_above
-                        it < 100.0 -> app.aaps.core.objects.R.drawable.ic_as_below
-                        else       -> app.aaps.core.objects.R.drawable.ic_swap_vert_black_48dp_green
-                    }
         val text = overviewData.sensitivityText(true, loop, iobCobCalculator)
         binding.infoLayout.sensitivity.visibility = if (text.isEmpty()) View.GONE else View.VISIBLE
         binding.infoLayout.sensitivity.text = text
+        binding.infoLayout.sensitivityIcon.setImageResource(
+            overviewData.autoOrTddSensRatio(loop, iobCobCalculator)?.let {
+                when {
+                    it > 1.0 -> app.aaps.core.objects.R.drawable.ic_as_above
+                    it <     1.0 -> app.aaps.core.objects.R.drawable.ic_as_below
+                    else     -> app.aaps.core.objects.R.drawable.ic_swap_vert_black_48dp_green
                 }
-                    ?: app.aaps.core.objects.R.drawable.ic_swap_vert_black_48dp_green
-            )
-        } else {
-            binding.infoLayout.sensitivityIcon.setImageResource(
-                    when {
-                        it > 100.0 -> app.aaps.core.objects.R.drawable.ic_x_as_above
-                        it < 100.0 -> app.aaps.core.objects.R.drawable.ic_x_as_below
-                        else       -> app.aaps.core.objects.R.drawable.ic_x_swap_vert
-                    }
-                }
-                    ?: app.aaps.core.objects.R.drawable.ic_x_swap_vert
-            )
-        }
-
-            }
-            overViewText.add(
-                String.format(
-        } else {
+            } ?: app.aaps.core.objects.R.drawable.ic_x_swap_vert
+        )
     }
 
     private fun updatePumpStatus() {
