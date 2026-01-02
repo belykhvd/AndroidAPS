@@ -157,6 +157,22 @@
 
             <TextView
                 android:id="@+id/long_avg_delta"
+                android:layout_gravity="end"
+                android:textAlignment="textEnd"
+                tools:text="n/a"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/bg_accel_row"
+            android:focusable="true">
+
+                android:layout_gravity="end"
+                android:textAlignment="textEnd"
+                android:text="a: "
+                android:contentDescription="acceleration"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:id="@+id/bg_accel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -425,18 +441,12 @@
             android:textStyle="bold"
             tools:ignore="HardcodedText" />
 
-        <TextView
             android:id="@+id/variable_sensitivity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginTop="-9dp"
             android:gravity="center_horizontal"
             android:paddingBottom="3dp"
             tools:text="n/a"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textStyle="bold"
-            android:visibility="visible"
-            tools:ignore="HardcodedText" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

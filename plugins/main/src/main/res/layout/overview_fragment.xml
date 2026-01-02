@@ -77,6 +77,24 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:foreground="?attr/selectableItemBackgroundBorderless"
                         app:drawableStartCompat="@drawable/ic_crosstarget"
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/exercise_mode_card"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="4dp"
+                    app:cardCornerRadius="4dp"
+                    app:cardElevation="0dp">
+
+                        android:id="@+id/exercise_mode"
+                        android:contentDescription="@string/careportal_exercise"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:paddingHorizontal="12dp"
+                        android:src="@drawable/ic_cp_exercise_24dp"
                         tools:ignore="HardcodedText" />
                 </androidx.cardview.widget.CardView>
 

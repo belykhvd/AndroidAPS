@@ -29,6 +29,7 @@ import app.aaps.core.data.model.RM
 import app.aaps.core.data.pump.defs.PumpType
 import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
+import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.graph.data.GraphViewWithCleanup
 import app.aaps.core.interfaces.aps.IobTotal
 import app.aaps.core.interfaces.aps.Loop
@@ -246,6 +247,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
 
         binding.activeProfile.setOnClickListener(this)
         binding.activeProfile.setOnLongClickListener(this)
+        binding.exerciseMode.setOnClickListener(this)
         binding.tempTarget.setOnClickListener(this)
         binding.tempTarget.setOnLongClickListener(this)
         binding.pumpStatusLayout.setOnClickListener(this)
@@ -389,6 +391,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         processAps()
         updateProfile()
         updateTemporaryTarget()
+        updateExerciseMode()
     }
 
     @Synchronized
@@ -447,6 +450,15 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                     activity,
                     ProtectionCheck.Protection.BOLUS,
                     UIRunnable { if (isAdded) uiInteraction.runTempTargetDialog(childFragmentManager) })
+
+                R.id.exercise_mode         -> protectionCheck.queryProtection(
+                    activity,
+                    ProtectionCheck.Protection.BOLUS,
+                    UIRunnable { if (isAdded) {
+                        val state = !preferences.get(BooleanKey.ApsAutoIsfExerciseMode)
+                        preferences.put(BooleanKey.ApsAutoIsfExerciseMode, state)
+                        updateExerciseMode()
+                    } })
 
                 R.id.active_profile      -> {
                     uiInteraction.runProfileViewerDialog(
@@ -604,7 +616,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             _binding ?: return@runOnUiThread
             if (resultAvailable && pump.isInitialized() && loop.runningMode == RM.Mode.OPEN_LOOP && (loop as PluginBase).isEnabled()) {
                 binding.buttonsLayout.acceptTempButton.visibility = View.VISIBLE
-                binding.buttonsLayout.acceptTempButton.text = "${rh.gs(R.string.set_basal_question)}\n${lastRun.constraintsProcessed?.resultAsString()}"
+                binding.buttonsLayout.acceptTempButton.text = "${rh.gs(R.string.set_basal_question)}\n${lastRun?.constraintsProcessed?.resultAsString()}"
             } else {
                 binding.buttonsLayout.acceptTempButton.visibility = View.GONE
             }
@@ -689,6 +701,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                         list += event.hashCode()
                     }
             binding.buttonsLayout.userButtonsLayout.visibility = events.isNotEmpty().toVisibility()
+            binding.exerciseModeCard.visibility = (activePlugin.activeAPS.algorithm == APSResult.Algorithm.AUTO_ISF).toVisibility()
         }
         if (list != lastUserAction) {
             // Synchronize Watch Tiles with overview
@@ -852,6 +865,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         val trendDescription = trendCalculator.getTrendDescription(iobCobCalculator.ads)
         val trendArrow = trendCalculator.getTrendArrow(iobCobCalculator.ads)
         val lastBgDescription = lastBgData.lastBgDescription()
+        val isAutoISF = activePlugin.activeAPS.algorithm == APSResult.Algorithm.AUTO_ISF
         runOnUiThread {
             _binding ?: return@runOnUiThread
             binding.infoLayout.bg.text = profileUtil.fromMgdlToStringInUnits(lastBg?.recalculated)
@@ -867,12 +881,16 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                 binding.infoLayout.delta.text = profileUtil.fromMgdlToSignedStringInUnits(glucoseStatus.delta)
                 binding.infoLayout.avgDelta.text = profileUtil.fromMgdlToSignedStringInUnits(glucoseStatus.shortAvgDelta)
                 binding.infoLayout.longAvgDelta.text = profileUtil.fromMgdlToSignedStringInUnits(glucoseStatus.longAvgDelta)
+                binding.infoLayout.bgAccel.text = String.format(Locale.ENGLISH, "%.1f", glucoseStatus.bgAcceleration)
             } else {
                 binding.infoLayout.deltaLarge.text = ""
                 binding.infoLayout.delta.text = "Δ " + rh.gs(app.aaps.core.ui.R.string.value_unavailable_short)
                 binding.infoLayout.avgDelta.text = ""
                 binding.infoLayout.longAvgDelta.text = ""
+                binding.infoLayout.bgAccel.text = ""
             }
+
+            binding.infoLayout.bgAccelRow.visibility = isAutoISF.toVisibility()
 
             // strike through if BG is old
             binding.infoLayout.bg.paintFlags =
@@ -1274,7 +1292,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.notifications.let { notificationStore.updateNotifications(it) }
     }
 
-    fun popupBolusDialogIfRunning(onClick: Boolean) {
+    private fun popupBolusDialogIfRunning(onClick: Boolean) {
         // Check if bolus is in progress and show dialog if needed
         // Only show for manual bolus (not SMB) with progress > 0
         if (commandQueue.bolusInQueue()) {
@@ -1288,6 +1306,19 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                     })
                 }
             }
+        }
+    }
+
+    private fun updateExerciseMode() {
+        _binding ?: return
+        val enabled = preferences.get(BooleanKey.ApsAutoIsfExerciseMode)
+        with (binding.exerciseMode) {
+            setColorFilter(rh.gac(
+                if (enabled) app.aaps.core.ui.R.attr.ribbonTextWarningColor
+                else app.aaps.core.ui.R.attr.ribbonTextDefaultColor))
+            setBackgroundColor(rh.gac(
+                if (enabled) app.aaps.core.ui.R.attr.ribbonWarningColor
+                else app.aaps.core.ui.R.attr.ribbonDefaultColor))
         }
     }
 }

@@ -169,6 +169,7 @@ class OverviewPlugin @Inject constructor(
             .put(IntKey.OverviewBattWarning, preferences)
             .put(IntKey.OverviewBattCritical, preferences)
             .put(IntKey.OverviewBolusPercentage, preferences)
+            .put(BooleanKey.ApsAutoIsfExerciseMode, preferences)
             .put(BooleanNonKey.AutosensUsedOnMainPhone.key, constraintsChecker.isAutosensModeEnabled().value())
 
     override fun applyConfiguration(configuration: JSONObject) {
@@ -199,6 +200,7 @@ class OverviewPlugin @Inject constructor(
             .store(IntKey.OverviewBattWarning, preferences)
             .store(IntKey.OverviewBattCritical, preferences)
             .store(IntKey.OverviewBolusPercentage, preferences)
+            .store(BooleanKey.ApsAutoIsfExerciseMode, preferences)
             .store(BooleanNonKey.AutosensUsedOnMainPhone, preferences)
 
         val newUnits = preferences.getIfExists(StringKey.GeneralUnits) ?: "new"

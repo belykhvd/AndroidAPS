@@ -155,6 +155,7 @@ class OverviewDataImpl @Inject constructor(
         } ?: rh.gs(app.aaps.core.ui.R.string.value_unavailable_short)
             if (preferences.get(BooleanKey.ApsDynIsfAdjustSensitivity))
             else
+            else if (config.AAPSCLIENT) processedDeviceStatusData.getAPSResult()?.variableSens ?: 0.0
             else
 
     @DrawableRes override fun temporaryBasalIcon(): Int =
