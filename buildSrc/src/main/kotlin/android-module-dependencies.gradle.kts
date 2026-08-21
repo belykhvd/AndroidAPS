@@ -35,10 +35,6 @@ android {
         targetCompatibility = Versions.javaVersion
     }
 
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-opt-in=kotlin.time.ExperimentalTime"
-    }
-
     lint {
         checkReleaseBuilds = false
         disable += "MissingTranslation"

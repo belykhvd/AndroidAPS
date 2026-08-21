@@ -28,8 +28,6 @@ dependencies {
 
     api(libs.com.caverock.androidsvg)
 
-    api(libs.kotlinx.datetime)
-
     api(libs.io.reactivex.rxjava3.rxandroid)
     api(libs.net.danlew.android.joda)
 

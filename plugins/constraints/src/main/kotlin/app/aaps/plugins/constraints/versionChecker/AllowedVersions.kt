@@ -1,10 +1,12 @@
 package app.aaps.plugins.constraints.versionChecker
 
 import app.aaps.core.utils.JsonHelper
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 object AllowedVersions {
 
@@ -14,8 +16,8 @@ object AllowedVersions {
 
     fun endDateToMilliseconds(endDate: String): Long? =
         try {
-            val date = LocalDate.parse(endDate)
-            date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+            val date = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            LocalDateTime.of(date, LocalTime.of(0, 0)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         } catch (_: Exception) {
             null
         }

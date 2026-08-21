@@ -111,15 +111,13 @@ class DiaconnG8Pump @Inject constructor(
     /**
      * Sync TBR state from pump response fields (tbStatus, tbTime, tbInjectRateRatio, tbElapsedTime)
      * This is more reliable than pumpSync.expectedPumpState() which may have timing issues
-     * Note: tbTime is in 15-minute units (e.g., tbTime=2 means 30 minutes)
-     *       tbElapsedTime is in minutes
      */
     fun syncTempBasalFromPump() {
         if (tbStatus == 1) { // TBR is running
-            // Calculate start time from elapsed time (tbElapsedTime is in minutes)
+            // Calculate start time from elapsed time2
             tempBasalStart = dateUtil.now() - T.mins(tbElapsedTime.toLong()).msecs()
-            // Duration in milliseconds (tbTime is in 15-minute units)
-            tempBasalDuration = T.mins((tbTime * 15).toLong()).msecs()
+            // Duration in milliseconds
+            tempBasalDuration = T.mins(tbTime.toLong()).msecs()
             // Calculate absolute rate from tbInjectRateRatio
             tempBasalAbsoluteRate = if (tbInjectRateRatio >= 50000) {
                 // Percentage mode: 50000 = 0%, 50100 = 100%, 50250 = 250%
@@ -129,13 +127,13 @@ class DiaconnG8Pump @Inject constructor(
                 // Absolute mode: 1000 = 0.00 U/h, 1025 = 0.25 U/h, 1600 = 6.00 U/h
                 (tbInjectRateRatio - 1000) / 100.0
             }
-            aapsLogger.debug(LTag.PUMP, "syncTempBasalFromPump: running, start=$tempBasalStart, duration=${T.msecs(tempBasalDuration).mins()}min (tbTime=$tbTime), rate=$tempBasalAbsoluteRate U/h")
+            aapsLogger.debug(LTag.PUMP, "syncTempBasalFromPump: running, start=$tempBasalStart, duration=${T.msecs(tempBasalDuration).mins()}min, rate=$tempBasalAbsoluteRate U/h")
         } else {
             // TBR is not running - clear state
             tempBasalStart = 0
             tempBasalDuration = 0
             tempBasalAbsoluteRate = 0.0
-            aapsLogger.debug(LTag.PUMP, "syncTempBasalFromPump: not running (tbStatus=$tbStatus), state cleared")
+            aapsLogger.debug(LTag.PUMP, "syncTempBasalFromPump: not running, state cleared")
         }
     }
 

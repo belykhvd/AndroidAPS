@@ -99,7 +99,7 @@ class PreferencesImpl @Inject constructor(
     }
 
     override fun get(key: BooleanPreferenceKey): Boolean =
-        if (!config.isEngineeringMode() && key.engineeringModeOnly) key.defaultValue
+        if (key.engineeringModeOnly && !config.isEngineeringMode()) key.defaultValue
         else if (simpleMode && key.defaultedBySM) calculatedDefaultValue(key)
         else if (key.calculatedDefaultValue && isHidden(key)) calculatedDefaultValue(key)
         else sp.getBoolean(key.key, calculatedDefaultValue(key))
